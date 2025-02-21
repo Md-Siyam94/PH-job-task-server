@@ -33,9 +33,30 @@ async function run() {
     await client.connect();
 
     const taskCollection = client.db("Task-management").collection("tasks")
+    const userCollection = client.db("Task-management").collection("users")
+
+    // user collection
+    app.get("/users", async(req, res)=>{
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.post("/users", async(req, res)=>{
+      const user = req.body;
+      
+      const result = await userCollection.insertOne(user)
+      res.send(result)
+    })
 
 
     // Task collection
+    app.get("/tasks/:email", async(req, res)=>{
+      const email = req.params.email;
+      const query = {email: email};
+      const result = await taskCollection.find(query).toArray();
+      res.send(result)
+    })
+
     app.get("/tasks",async(req, res)=>{
         const result = await taskCollection.find().toArray();
         res.send(result)
